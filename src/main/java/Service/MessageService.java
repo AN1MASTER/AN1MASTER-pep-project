@@ -51,4 +51,8 @@ public class MessageService {
         
         return null;
     }
+
+    public List<Message> getAccountMessages(int account_id) {
+        return this.messageDAO.getAccountMessages(account_id);
+    }
 }

@@ -141,7 +141,7 @@ public class SocialMediaController {
      * @param context
      */
     private void getAccountMessagesHandler(Context context) throws JsonProcessingException{
-        
+        context.json(messageService.getAccountMessages(Integer.parseInt(context.pathParam("account_id"))));
     }
 
     /**

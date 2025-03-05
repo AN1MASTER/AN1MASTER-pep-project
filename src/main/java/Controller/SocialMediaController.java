@@ -1,11 +1,15 @@
 package Controller;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -16,9 +20,11 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
     AccountService accountService;
+    MessageService messageService;
 
     public SocialMediaController() {
         accountService = new AccountService();
+        messageService = new MessageService();
     }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -83,7 +89,20 @@ public class SocialMediaController {
      * Handler for message creation.
      * @param context
      */
-    private void getAllMessagesHandler(Context context) {
+    private void getAllMessagesHandler(Context context) throws JsonProcessingException{
+        context.json(messageService.getAllMessages());
+    }
+
+    /**
+     * Handler for message creation.
+     * @param context
+     */
+    private void getMessageByIdHandler(Context context) throws JsonProcessingException{
+        if (messageService.getMessageById(Integer.parseInt(context.pathParam("message_id"))) == null) {
+            context.json(context.body());
+        } else {
+            context.json(messageService.getMessageById(Integer.parseInt(context.pathParam("message_id"))));
+        }
         
     }
 
@@ -91,7 +110,19 @@ public class SocialMediaController {
      * Handler for message creation.
      * @param context
      */
-    private void getMessageByIdHandler(Context context) {
+    private void deleteMessageByIdHandler(Context context) throws JsonProcessingException{
+        if (messageService.getMessageById(Integer.parseInt(context.pathParam("message_id"))) == null) {
+            context.json(context.body());
+        } else {
+            context.json(messageService.deletMessageById(Integer.parseInt(context.pathParam("message_id"))));
+        }
+    }
+
+    /**
+     * Handler for message creation.
+     * @param context
+     */
+    private void updateMessageByIdHandler(Context context) throws JsonProcessingException{
         
     }
 
@@ -99,23 +130,7 @@ public class SocialMediaController {
      * Handler for message creation.
      * @param context
      */
-    private void deleteMessageByIdHandler(Context context) {
-        
-    }
-
-    /**
-     * Handler for message creation.
-     * @param context
-     */
-    private void updateMessageByIdHandler(Context context) {
-        
-    }
-
-    /**
-     * Handler for message creation.
-     * @param context
-     */
-    private void getAccountMessagesHandler(Context context) {
+    private void getAccountMessagesHandler(Context context) throws JsonProcessingException{
         
     }
 
@@ -131,8 +146,17 @@ public class SocialMediaController {
      * Handler for message creation.
      * @param context
      */
-    private void postCreateMessageHandler(Context context) {
-        
+    private void postCreateMessageHandler(Context context) throws JsonProcessingException{
+        ObjectMapper map = new ObjectMapper();
+        Message message = map.readValue(context.body(), Message.class);
+        Message newMessage = messageService.addMessage(message);
+
+        if (newMessage == null) {
+            context.status(400);
+        } else {
+            context.json(map.writeValueAsString(newMessage));
+        }
+
     }
 
 }

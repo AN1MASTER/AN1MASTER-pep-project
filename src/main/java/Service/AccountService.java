@@ -22,10 +22,10 @@ public class AccountService {
      */
     public Account registerAccount(Account account) {
         if (!account.getUsername().isBlank() && account.getPassword().length() >= 4 && !checkIfExists(account)) {
-            System.out.println("username:" + account.getUsername());
+            //System.out.println("username:" + account.getUsername());
             return this.accountDAO.insertAccount(account);
         }
-        System.out.println("User not Created!");
+        //System.out.println("User not Created!");
         return null;
     }
 
@@ -45,4 +45,6 @@ public class AccountService {
     public Account login(Account account) {
         return this.accountDAO.getAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
     }
+
+    
 }

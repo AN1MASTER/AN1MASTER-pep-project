@@ -40,7 +40,7 @@ public class AccountDAO {
 
         try {
             String sql = "INSERT INTO Account (username, password) VALUES (?, ?);";
-            PreparedStatement ps =connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, account.getUsername());
             ps.setString(2, account.getPassword());
             ps.executeUpdate();
@@ -73,6 +73,27 @@ public class AccountDAO {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Account getAccountById(int id) {
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM Account WHERE account_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Account account = new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+                System.out.println("Account Found. ID = " + account.getAccount_id());
+                return account;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Account Found.");
         }
         return null;
     }

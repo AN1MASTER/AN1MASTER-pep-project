@@ -41,7 +41,7 @@ public class SocialMediaController {
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
         app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
         app.get("/accounts/{account_id}/messages", this::getAccountMessagesHandler);
-        app.get("/accounts", this::getAllAccountsHandler);
+        
 
         return app;
     }
@@ -86,7 +86,7 @@ public class SocialMediaController {
     }
 
     /**
-     * Handler for message creation.
+     * Handler for retrieval of all messages in database.
      * @param context
      */
     private void getAllMessagesHandler(Context context) throws JsonProcessingException{
@@ -94,7 +94,7 @@ public class SocialMediaController {
     }
 
     /**
-     * Handler for message creation.
+     * Handler for message retrieval with message id.
      * @param context
      */
     private void getMessageByIdHandler(Context context) throws JsonProcessingException{
@@ -107,38 +107,40 @@ public class SocialMediaController {
     }
 
     /**
-     * Handler for message creation.
+     * Handler for message deletion.
      * @param context
      */
     private void deleteMessageByIdHandler(Context context) throws JsonProcessingException{
         if (messageService.getMessageById(Integer.parseInt(context.pathParam("message_id"))) == null) {
             context.json(context.body());
         } else {
-            context.json(messageService.deletMessageById(Integer.parseInt(context.pathParam("message_id"))));
+            context.json(messageService.deleteMessageById(Integer.parseInt(context.pathParam("message_id"))));
         }
     }
 
     /**
-     * Handler for message creation.
+     * Handler for message update.
      * @param context
      */
     private void updateMessageByIdHandler(Context context) throws JsonProcessingException{
+        ObjectMapper map = new ObjectMapper();
+        Message message = map.readValue(context.body(), Message.class);
+        int message_id = Integer.parseInt(context.pathParam("message_id"));
         
+        Message updatedMessage = messageService.updateMessage(message_id, message);
+
+        if (updatedMessage == null) {
+            context.status(400);
+        } else {
+            context.json(map.writeValueAsString(updatedMessage));
+        }
     }
 
     /**
-     * Handler for message creation.
+     * Handler for retrieval of messages posted by specific account.
      * @param context
      */
     private void getAccountMessagesHandler(Context context) throws JsonProcessingException{
-        
-    }
-
-    /**
-     * Handler for message creation.
-     * @param context
-     */
-    private void getAllAccountsHandler(Context context) throws JsonProcessingException{
         
     }
 
